@@ -17,7 +17,9 @@
             hover: 'ui-state-hover',
             value: '',
             save: '',
-            buttonText: 'Save',
+            del: '',
+            deleteButtonText: 'Delete',
+            saveButtonText: 'Save',
             placeholder: 'Click to edit',
             control: 'input'
         }, options);
@@ -44,7 +46,7 @@
         self.bind('click', function(event) {
             var $this = $(event.target);
 
-            if ($this.is('button')) {
+            if ($this.is('button') && $this.next().is('button')) {
                 var hash = {
                     value: $input = $this.siblings(control).val()
                 };
@@ -53,7 +55,13 @@
                     self.value(hash.value);
                 }
 
-            } else if ($this.is(self[0].tagName) || $this.hasClass('inlineEdit-placeholder')) {
+            } 
+            else if($this.is('button') && $this.prev().is('button')){
+                if (($.isFunction(options.del) && options.del.call(self, event, hash)) !== false || !options.del) {
+                    $this.parent().hide();
+                }
+            }
+            else if ($this.is(self[0].tagName) || $this.hasClass('inlineEdit-placeholder')) {
                 self
                     .html( mutatedHtml(self.value()) )
                     .find(control)
@@ -85,13 +93,14 @@
         }
 
         var mutatedHtml = function(value) {
+            buttonElements = ' <button>'+ options.saveButtonText +'</button><button>' + options.deleteButtonText + '</button>'
             if (options.control) {
                 switch (options.control) {
                     case 'textarea':
-                        return '<textarea>'+ value.replace(/<br\s?\/?>/g,"\n") +'</textarea>' + '<br /><button>'+ options.buttonText +'</button>';
+                        return '<textarea>'+ value.replace(/<br\s?\/?>/g,"\n") +'</textarea>' + '<br />' + buttonElements;
                 }
             }
-            return '<input type="text" value="'+ value +'">' + ' <button>'+ options.buttonText +'</button>';
+            return '<input type="text" value="'+ value +'">' + buttonElements ;
         }
     }
 
