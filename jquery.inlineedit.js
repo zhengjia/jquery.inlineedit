@@ -51,15 +51,17 @@
                     value: $input = $this.siblings(control).val()
                 };
 
-                if (($.isFunction(options.save) && options.save.call(self, event, hash)) !== false || !options.save) {
+                if ($.isFunction(options.save) && (options.save.call(self, event, hash)) !== false || !options.save) {
                     self.value(hash.value);
                 }
 
             } 
             else if($this.is('button') && $this.prev().is('button')){
-                if (($.isFunction(options.del) && options.del.call(self, event, hash)) !== false || !options.del) {
+                var confirmation = confirm('Are you sure?');
+                if (confirmation && ($.isFunction(options.del) && (options.del.call(self, event, hash)) !== false || !options.del)) {
                     $this.parent().hide();
                 }
+                return false;
             }
             else if ($this.is(self[0].tagName) || $this.hasClass('inlineEdit-placeholder')) {
                 self
